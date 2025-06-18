@@ -8,7 +8,7 @@
 import Foundation
 
 class OutfitsStorage {
-    private let key = "closet"
+    private let key = "outfits"
     
     func saveCloset(_ closet: [Outfit]) {
         let encoder = JSONEncoder()

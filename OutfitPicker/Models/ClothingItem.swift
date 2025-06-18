@@ -7,29 +7,14 @@
 
 import Foundation
 
-enum ClothingItemType: CaseIterable {
-    case shortSleeveTops, shorts, shortSkirts, longSleeveTops, longPants, longSkirts
-        
-    var stringValue: String {
-        switch self {
-        case .shorts: 
-            return "Shorts"
-        case .longPants:
-            return "Long Pants"
-        case .shortSleeveTops:
-            return "Short Sleeve Tops"
-        case .longSleeveTops:
-            return "Long Sleeve Tops"
-        case .longSkirts:
-            return "Long Skirts"
-        case .shortSkirts:
-            return "Short Skirts"
-        }
-    }
-}
-
-struct ClothingItem: Identifiable {
-    let id = UUID()
+struct ClothingItem: Identifiable, Codable {
+    let id: UUID
     let imageName: String
     let itemType: ClothingItemType
+    
+    init(imageName: String, itemType: ClothingItemType) {
+        self.id = UUID()
+        self.imageName = imageName
+        self.itemType = itemType
+    }
 }
