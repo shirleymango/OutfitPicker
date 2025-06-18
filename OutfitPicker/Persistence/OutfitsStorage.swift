@@ -28,3 +28,15 @@ class OutfitsStorage {
         return decoded
     }
 }
+
+extension Outfit {
+    func topIndexMatches(item: ClothingItem, in closet: [ClothingItem]) -> Bool {
+        guard let top = closet.indices.contains(topIndex) ? closet[topIndex] : nil else { return false }
+        return top.id == item.id
+    }
+    
+    func bottomIndexMatches(item: ClothingItem, in closet: [ClothingItem]) -> Bool {
+        guard let bottom = closet.indices.contains(bottomIndex) ? closet[bottomIndex] : nil else { return false }
+        return bottom.id == item.id
+    }
+}
