@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @StateObject private var outfitsViewModel = OutfitsViewModel()
+    @StateObject private var closetViewModel = ClosetViewModel()
     @State private var clothingItems: [ClothingItem] = []
     
     let closetStorage = ClosetStorage()
@@ -33,10 +34,7 @@ struct MainTabView: View {
                 Image(systemName: "hanger")
                 Text("Outfits")
             }
-            ClosetView(
-                tops: clothingItems.filter { $0.itemType.isTop },
-                bottoms: clothingItems.filter { $0.itemType.isBottom }
-            )
+            ClosetView(viewModel: closetViewModel)
             .tabItem {
                 Image(systemName: "suitcase")
                 Text("Closet")

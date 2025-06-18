@@ -10,21 +10,37 @@ import SwiftUI
 struct GridView: View {
     let title: String
     let items: [ClothingItem]
-    
+    var isDeleteMode: Bool
+    var onDeleteTapped: (ClothingItem) -> Void
+
     var body: some View {
         Text(title)
             .font(.headline)
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 10) {
-                ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+            .padding(.horizontal)
+
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 10) {
+            ForEach(items) { item in
+                ZStack(alignment: .topTrailing) {
                     Image(item.imageName)
                         .resizable()
                         .scaledToFit()
                         .cornerRadius(12)
                         .padding()
-                        .tag(index)
+
+                    if isDeleteMode {
+                        Button(action: {
+                            onDeleteTapped(item)
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .foregroundColor(.red)
+                                .background(Color.white)
+                                .clipShape(Circle())
+                        }
+                        .offset(x: 5, y: -5)
+                    }
                 }
             }
         }
+        .padding(.horizontal)
     }
 }
