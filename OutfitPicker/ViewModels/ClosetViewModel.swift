@@ -23,7 +23,16 @@ class ClosetViewModel: ObservableObject {
     
     func loadCloset() async {
         isLoading = true
-        closet = storage.load()
+        do {
+            closet = await Task.detached { [self] in storage.load() }.value
+            if closet.isEmpty {
+                closet = SampleData.tops + SampleData.bottoms
+                storage.save(closet)
+            }
+        } catch {
+            closet = SampleData.tops + SampleData.bottoms
+            storage.save(closet)
+        }
         isLoading = false
     }
     
