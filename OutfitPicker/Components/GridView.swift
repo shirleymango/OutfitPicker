@@ -21,12 +21,17 @@ struct GridView: View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 10) {
             ForEach(items) { item in
                 ZStack(alignment: .topTrailing) {
-                    Image(item.imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .cornerRadius(12)
-                        .padding()
-
+                    if let image = item.image {
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .cornerRadius(12)
+                            .padding()
+                    } else {
+                        Color.gray // fallback in case image fails
+                            .cornerRadius(12)
+                            .padding()
+                    }
                     if isDeleteMode {
                         Button(action: {
                             onDeleteTapped(item)

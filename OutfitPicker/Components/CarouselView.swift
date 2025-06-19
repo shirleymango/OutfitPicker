@@ -14,12 +14,19 @@ struct CarouselView: View {
     var body: some View {
         TabView(selection: $selectedIndex) {
             ForEach(Array(items.enumerated()), id: \.offset) { index, item in
-                Image(item.imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .cornerRadius(12)
-                    .padding()
-                    .tag(index)
+                if let image = item.image {
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .cornerRadius(12)
+                        .padding()
+                        .tag(index)
+                } else {
+                    Color.gray // fallback in case image fails
+                        .cornerRadius(12)
+                        .padding()
+                        .tag(index)
+                }
             }
         }
         .tabViewStyle(PageTabViewStyle())

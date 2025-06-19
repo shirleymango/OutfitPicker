@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor
 class ClosetViewModel: ObservableObject {
@@ -34,6 +35,19 @@ class ClosetViewModel: ObservableObject {
     func addItem(_ item: ClothingItem) {
         closet.append(item)
         storage.save(closet)
+    }
+    
+    func addImageFromCameraRoll(_ image: UIImage) {
+        let imageName = UUID().uuidString + ".png"
+        
+        if let data = image.pngData() {
+            let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(imageName)
+            try? data.write(to: url)
+
+            let newItem = ClothingItem(imageName: imageName, itemType: .shortSleeveTops, isFromCameraRoll: true)
+            closet.append(newItem)
+            storage.save(closet)
+        }
     }
     
     func deleteItem(_ item: ClothingItem) async {

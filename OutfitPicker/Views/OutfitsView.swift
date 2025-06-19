@@ -55,20 +55,14 @@ struct OutfitsView: View {
                         List {
                             ForEach(filteredCloset) { outfit in
                                 HStack {
-                                    if let top = tops.first(where: { $0.id == outfit.topID }) {
-                                        Image(top.imageName)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 100)
-                                            .cornerRadius(8)
-                                    }
-                                    
-                                    if let bottom = bottoms.first(where: { $0.id == outfit.bottomID }) {
-                                        Image(bottom.imageName)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 100)
-                                            .cornerRadius(8)
+                                    Group {
+                                        if let top = tops.first(where: { $0.id == outfit.topID }) {
+                                            OutfitImageView(for: top)
+                                        }
+                                        
+                                        if let bottom = bottoms.first(where: { $0.id == outfit.bottomID }) {
+                                            OutfitImageView(for: bottom)
+                                        }
                                     }
                                     
                                     Spacer()
@@ -91,5 +85,21 @@ struct OutfitsView: View {
         .task {
             await viewModel.loadOutfits()
         }
+    }
+}
+
+@ViewBuilder
+func OutfitImageView(for item: ClothingItem) -> some View {
+    if let image = item.image {
+        image
+            .resizable()
+            .scaledToFit()
+            .frame(height: 100)
+            .cornerRadius(8)
+    } else {
+        Color.gray
+            .scaledToFit()
+            .frame(height: 100)
+            .cornerRadius(8)
     }
 }

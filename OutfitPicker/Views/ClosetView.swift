@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct ClosetView: View {
     @ObservedObject var viewModel: ClosetViewModel
 
     @State private var showImagePicker = false
-    @State private var selectedImage: UIImage?
+    @State private var selectedItem: PhotosPickerItem? = nil
+    @State private var selectedImage: UIImage? = nil
 
     @State private var isDeleteMode = false
     @State private var itemToDelete: ClothingItem?
@@ -96,12 +98,17 @@ struct ClosetView: View {
                 await viewModel.loadCloset()
             }
             .sheet(isPresented: $showImagePicker) {
-                // Replace this with your image picker implementation
-//                ImagePicker(selectedImage: $selectedImage) { image in
-//                    if let image = image {
-//                        viewModel.addImageFromCameraRoll(image)
-//                    }
-//                }
+                PhotosPicker("Add Clothing Item", selection: $selectedItem, matching: .images)
+                    .onChange(of: selectedItem) { newItem in
+                        guard let newItem = newItem else { return }
+                        Task {
+                            if let data = try? await newItem.loadTransferable(type: Data.self),
+                               let image = UIImage(data: data) {
+                                selectedImage = image
+                                viewModel.addImageFromCameraRoll(image)
+                            }
+                        }
+                    }
             }
         }
     }
