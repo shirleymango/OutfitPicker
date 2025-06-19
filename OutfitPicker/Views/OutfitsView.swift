@@ -20,9 +20,13 @@ struct OutfitsView: View {
         }
         
         return viewModel.outfits.filter { outfit in
-            let topType = tops[outfit.topIndex].itemType
-            let bottomType = bottoms[outfit.bottomIndex].itemType
-            return selectedTypes.contains(topType) || selectedTypes.contains(bottomType)
+            let top = tops.first { $0.id == outfit.topID }
+            let bottom = bottoms.first { $0.id == outfit.bottomID }
+            
+            let topMatches = top.map { selectedTypes.contains($0.itemType) } ?? false
+            let bottomMatches = bottom.map { selectedTypes.contains($0.itemType) } ?? false
+            
+            return topMatches || bottomMatches
         }
     }
 
@@ -51,17 +55,21 @@ struct OutfitsView: View {
                         List {
                             ForEach(filteredCloset) { outfit in
                                 HStack {
-                                    Image(tops[outfit.topIndex].imageName)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(height: 100)
-                                        .cornerRadius(8)
+                                    if let top = tops.first(where: { $0.id == outfit.topID }) {
+                                        Image(top.imageName)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(height: 100)
+                                            .cornerRadius(8)
+                                    }
                                     
-                                    Image(bottoms[outfit.bottomIndex].imageName)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(height: 100)
-                                        .cornerRadius(8)
+                                    if let bottom = bottoms.first(where: { $0.id == outfit.bottomID }) {
+                                        Image(bottom.imageName)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(height: 100)
+                                            .cornerRadius(8)
+                                    }
                                     
                                     Spacer()
                                     

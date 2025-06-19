@@ -30,11 +30,11 @@ class OutfitsViewModel: ObservableObject {
         isLoading = false
     }
     
-    func addOutfit(topIndex: Int, bottomIndex: Int) -> SaveResult? {
-        if outfits.contains(where: {$0.topIndex == topIndex && $0.bottomIndex == bottomIndex}) {
+    func addOutfit(top: ClothingItem, bottom: ClothingItem) -> SaveResult? {
+        if outfits.contains(where: { $0.topID == top.id && $0.bottomID == bottom.id }) {
             return .duplicate
         }
-        let newOutfit = Outfit(topIndex: topIndex, bottomIndex: bottomIndex)
+        let newOutfit = Outfit(top: top, bottom: bottom)
         outfits.append(newOutfit)
         storage.saveOutfits(outfits)
         return .success
@@ -47,6 +47,11 @@ class OutfitsViewModel: ObservableObject {
     
     func deleteOutfit(_ outfit: Outfit) {
         outfits.removeAll { $0.id == outfit.id }
+        storage.saveOutfits(outfits)
+    }
+    
+    func setOutfits(_ newOutfits: [Outfit]) {
+        outfits = newOutfits
         storage.saveOutfits(outfits)
     }
 }

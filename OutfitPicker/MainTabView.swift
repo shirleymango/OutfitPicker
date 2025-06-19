@@ -9,7 +9,13 @@ import SwiftUI
 
 struct MainTabView: View {
     @StateObject private var outfitsViewModel = OutfitsViewModel()
-    @StateObject private var closetViewModel = ClosetViewModel()
+    @StateObject private var closetViewModel: ClosetViewModel
+
+    init() {
+        let outfitsVM = OutfitsViewModel()
+        _outfitsViewModel = StateObject(wrappedValue: outfitsVM)
+        _closetViewModel = StateObject(wrappedValue: ClosetViewModel(outfitsViewModel: outfitsVM))
+    }
     
     var body: some View {
         TabView {

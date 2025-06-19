@@ -8,13 +8,12 @@
 import Foundation
 
 struct Outfit: Identifiable, Codable {
-    let id: UUID
-    let topIndex: Int
-    let bottomIndex: Int
-    
-    init(topIndex: Int, bottomIndex: Int) {
-        self.id = UUID()
-        self.topIndex = topIndex
-        self.bottomIndex = bottomIndex
+    let id = UUID()
+    let topID: UUID
+    let bottomID: UUID
+
+    init(top: ClothingItem, bottom: ClothingItem) {
+        self.topID = top.id
+        self.bottomID = bottom.id
     }
 }

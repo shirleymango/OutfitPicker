@@ -14,6 +14,11 @@ class ClosetViewModel: ObservableObject {
     
     private let storage = ClosetStorage()
     private let outfitsStorage = OutfitsStorage() // used to prune outfits on delete
+    private let outfitsViewModel: OutfitsViewModel
+    
+    init(outfitsViewModel: OutfitsViewModel) {
+        self.outfitsViewModel = outfitsViewModel
+    }
     
     func loadCloset() async {
         isLoading = true
@@ -36,12 +41,12 @@ class ClosetViewModel: ObservableObject {
         storage.save(closet)
 
         do {
-            var outfits = try await outfitsStorage.loadCloset()
+            var outfits = try await outfitsStorage.loadOutfits()
             outfits.removeAll {
-                $0.topIndexMatches(item: item, in: closet) ||
-                $0.bottomIndexMatches(item: item, in: closet)
+                $0.topIDMatches(item) || $0.bottomIDMatches(item)
             }
-            outfitsStorage.saveCloset(outfits)
+            outfitsStorage.saveOutfits(outfits)
+            outfitsViewModel.setOutfits(outfits) // 🔥 Keep ViewModel in sync
         } catch {
             print("Failed to load outfits while deleting item: \(error)")
         }

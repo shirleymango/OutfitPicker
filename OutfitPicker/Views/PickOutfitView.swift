@@ -11,10 +11,18 @@ struct PickOutfitView: View {
     let tops: [ClothingItem]
     let bottoms: [ClothingItem]
     @ObservedObject var outfitsViewModel: OutfitsViewModel
-    
+
     @State private var selectedTopIndex = 0
     @State private var selectedBottomIndex = 0
     @State private var saveOutfitResult: SaveResult? = nil
+
+    var selectedTop: ClothingItem? {
+        tops.indices.contains(selectedTopIndex) ? tops[selectedTopIndex] : nil
+    }
+
+    var selectedBottom: ClothingItem? {
+        bottoms.indices.contains(selectedBottomIndex) ? bottoms[selectedBottomIndex] : nil
+    }
 
     var body: some View {
         NavigationView {
@@ -23,14 +31,16 @@ struct PickOutfitView: View {
                     Text("Top")
                     CarouselView(items: tops, selectedIndex: $selectedTopIndex)
                 }
-                
+
                 VStack {
                     Text("Bottom")
                     CarouselView(items: bottoms, selectedIndex: $selectedBottomIndex)
                 }
-                
+
                 Button(action: {
-                    if let result = outfitsViewModel.addOutfit(topIndex: selectedTopIndex, bottomIndex: selectedBottomIndex) {
+                    guard let top = selectedTop, let bottom = selectedBottom else { return }
+
+                    if let result = outfitsViewModel.addOutfit(top: top, bottom: bottom) {
                         withAnimation {
                             saveOutfitResult = result
                         }
@@ -46,7 +56,7 @@ struct PickOutfitView: View {
                         .background(Color.blue)
                         .cornerRadius(10)
                 }
-                
+
                 if saveOutfitResult == .success {
                     Text("✅ Outfit Saved!")
                         .font(.headline)
@@ -55,6 +65,7 @@ struct PickOutfitView: View {
                     Text("⚠️ Outfit Already Saved!")
                         .font(.headline)
                 }
+
                 Spacer()
             }
             .padding()
