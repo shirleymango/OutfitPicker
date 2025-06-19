@@ -1,5 +1,5 @@
 //
-//  ClosetStorage.swift
+//  OutfitsStorage.swift
 //  OutfitPicker
 //
 //  Created by ZhuMacPro on 6/11/25.
@@ -10,9 +10,9 @@ import Foundation
 class OutfitsStorage {
     private let key = "outfits"
     
-    func saveOutfits(_ closet: [Outfit]) {
+    func saveOutfits(_ outfits: [Outfit]) {
         let encoder = JSONEncoder()
-        if let data = try? encoder.encode(closet) {
+        if let data = try? encoder.encode(outfits) {
             UserDefaults.standard.set(data, forKey: key)
         }
     }
