@@ -32,11 +32,6 @@ class ClosetViewModel: ObservableObject {
         isLoading = false
     }
     
-    func addItem(_ item: ClothingItem) {
-        closet.append(item)
-        storage.save(closet)
-    }
-    
     func addImageFromCameraRoll(_ image: UIImage, type: ClothingItemType) {
         let fileName = UUID().uuidString + ".png"
         if let data = image.pngData() {
