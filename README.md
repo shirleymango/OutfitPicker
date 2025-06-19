@@ -2,6 +2,10 @@
 
 Outfit Picker is a SwiftUI app that helps you plan your outfits by mixing-and-matching tops & bottoms and saving complete outfits.
 
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/bfa9fdc5-5a3f-47a0-b66a-432b6c14d73e" alt="drawing" width="400"/>
+</div>
+
 ---
 
 ## I. Features
@@ -75,3 +79,35 @@ if let data = try? await item.loadTransferable(type: Data.self),
 ```swift
 closet = await Task.detached(priority: .userInitiated) { storage.load() }.value
 ```
+
+## V. Screenshots
+
+### Picking Outfit
+
+https://github.com/user-attachments/assets/687248fb-c60d-41b5-9e69-cd9ee2a996b3
+- Pressing "Save to Closet" saves the oufit to storage
+- Success message is displayed "✅ Outfit Saved!"
+- Carousels for the tops and bottoms are both swipable left and right
+- Saved outfits are displayed in "Outfits" tab
+
+  ### Duplicate Outfit
+
+https://github.com/user-attachments/assets/19fb9e56-0dfc-469a-85b9-50abad1372b9
+- Duplicate outfits are not saved
+- Message is displayed "⚠️ Outfit Already Saved!"
+
+  ### Filter Outfits
+
+https://github.com/user-attachments/assets/2a8b5c3e-19b0-44d5-9a17-585d0bb40342
+
+- View Outfits in "Outfits" tab
+- Filter using the grid of options
+  
+  ### No Outfits with Selected Filter
+
+https://github.com/user-attachments/assets/53329a48-ea70-4473-a20e-7e1fee0e61c2
+- Message notifies user when there are no outfits with selected filters
+  
+### Delete Outfit
+
+https://github.com/user-attachments/assets/a732347d-8598-4851-85f1-13f1e769bfff  
