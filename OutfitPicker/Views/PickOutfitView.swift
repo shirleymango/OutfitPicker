@@ -28,12 +28,10 @@ struct PickOutfitView: View {
         NavigationView {
             VStack(spacing: 10) {
                 VStack {
-                    Text("Top")
                     CarouselView(items: tops, selectedIndex: $selectedTopIndex)
                 }
 
                 VStack {
-                    Text("Bottom")
                     CarouselView(items: bottoms, selectedIndex: $selectedBottomIndex)
                 }
 

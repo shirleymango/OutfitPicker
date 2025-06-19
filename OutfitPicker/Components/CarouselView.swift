@@ -20,12 +20,10 @@ struct CarouselView: View {
                             .resizable()
                             .scaledToFit()
                             .cornerRadius(12)
-                            .padding()
                             .tag(index)
                     } else {
                         Color.gray // fallback in case image fails
                             .cornerRadius(12)
-                            .padding()
                             .tag(index)
                     }
                 }
@@ -38,7 +36,6 @@ struct CarouselView: View {
                 .background(.thinMaterial)
                 .clipShape(Capsule())
                 .padding(.trailing, 12)
-                .padding(.bottom, 4)
-        }.frame(height: 200)
+        }.frame(height: 250)
     }
 }
