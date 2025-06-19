@@ -23,12 +23,7 @@ class ClosetViewModel: ObservableObject {
     
     func loadCloset() async {
         isLoading = true
-        do {
-            try await Task.sleep(nanoseconds: 200 * 1_000_000) // Simulated delay
-            closet = storage.load()
-        } catch {
-            closet = []
-        }
+        closet = storage.load()
         isLoading = false
     }
     
