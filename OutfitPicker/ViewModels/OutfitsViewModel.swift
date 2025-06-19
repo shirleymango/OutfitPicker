@@ -13,40 +13,40 @@ enum SaveResult {
 
 @MainActor
 class OutfitsViewModel: ObservableObject {
-    @Published var closet: [Outfit] = []
+    @Published var outfits: [Outfit] = []
     @Published var isLoading = true
     
     private let storage = OutfitsStorage()
     
-    func loadCloset() async {
+    func loadOutfits() async {
         do {
-            let loadedCloset = try await storage.loadCloset()
-            closet = loadedCloset
+            let loadedOutfits = try await storage.loadOutfits()
+            outfits = loadedOutfits
         }
         catch {
-            print("Failed to load closet:", error)
-            closet = []  // fallback gracefully
+            print("Failed to load outfits:", error)
+            outfits = []  // fallback gracefully
         }
         isLoading = false
     }
     
     func addOutfit(topIndex: Int, bottomIndex: Int) -> SaveResult? {
-        if closet.contains(where: {$0.topIndex == topIndex && $0.bottomIndex == bottomIndex}) {
+        if outfits.contains(where: {$0.topIndex == topIndex && $0.bottomIndex == bottomIndex}) {
             return .duplicate
         }
         let newOutfit = Outfit(topIndex: topIndex, bottomIndex: bottomIndex)
-        closet.append(newOutfit)
-        storage.saveCloset(closet)
+        outfits.append(newOutfit)
+        storage.saveOutfits(outfits)
         return .success
     }
     
     func deleteOutfit(at offsets: IndexSet) {
-        closet.remove(atOffsets: offsets)
-        storage.saveCloset(closet)
+        outfits.remove(atOffsets: offsets)
+        storage.saveOutfits(outfits)
     }
     
     func deleteOutfit(_ outfit: Outfit) {
-        closet.removeAll { $0.id == outfit.id }
-        storage.saveCloset(closet)
+        outfits.removeAll { $0.id == outfit.id }
+        storage.saveOutfits(outfits)
     }
 }

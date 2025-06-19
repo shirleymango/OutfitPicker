@@ -10,14 +10,14 @@ import Foundation
 class OutfitsStorage {
     private let key = "outfits"
     
-    func saveCloset(_ closet: [Outfit]) {
+    func saveOutfits(_ closet: [Outfit]) {
         let encoder = JSONEncoder()
         if let data = try? encoder.encode(closet) {
             UserDefaults.standard.set(data, forKey: key)
         }
     }
     
-    func loadCloset() async throws -> [Outfit] {
+    func loadOutfits() async throws -> [Outfit] {
         guard let savedData = UserDefaults.standard.data(forKey: key) else {
             return []
         }

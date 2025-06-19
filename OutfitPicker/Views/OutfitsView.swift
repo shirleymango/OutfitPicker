@@ -16,10 +16,10 @@ struct OutfitsView: View {
     
     var filteredCloset: [Outfit] {
         if selectedTypes.isEmpty {
-            return viewModel.closet
+            return viewModel.outfits
         }
         
-        return viewModel.closet.filter { outfit in
+        return viewModel.outfits.filter { outfit in
             let topType = tops[outfit.topIndex].itemType
             let bottomType = bottoms[outfit.bottomIndex].itemType
             return selectedTypes.contains(topType) || selectedTypes.contains(bottomType)
@@ -81,7 +81,7 @@ struct OutfitsView: View {
             }
         }
         .task {
-            await viewModel.loadCloset()
+            await viewModel.loadOutfits()
         }
     }
 }
