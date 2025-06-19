@@ -37,14 +37,17 @@ class ClosetViewModel: ObservableObject {
         storage.save(closet)
     }
     
-    func addImageFromCameraRoll(_ image: UIImage) {
-        let imageName = UUID().uuidString + ".png"
-        
+    func addImageFromCameraRoll(_ image: UIImage, type: ClothingItemType) {
+        let fileName = UUID().uuidString + ".png"
         if let data = image.pngData() {
-            let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(imageName)
+            let url = FileManager.default
+                     .urls(for: .documentDirectory, in: .userDomainMask)[0]
+                     .appendingPathComponent(fileName)
             try? data.write(to: url)
 
-            let newItem = ClothingItem(imageName: imageName, itemType: .shortSleeveTops, isFromCameraRoll: true)
+            let newItem = ClothingItem(imageName: fileName,
+                                       itemType:  type,
+                                       isFromCameraRoll: true)
             closet.append(newItem)
             storage.save(closet)
         }

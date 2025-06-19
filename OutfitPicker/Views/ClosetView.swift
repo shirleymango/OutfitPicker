@@ -11,105 +11,99 @@ import PhotosUI
 struct ClosetView: View {
     @ObservedObject var viewModel: ClosetViewModel
 
-    @State private var showImagePicker = false
-    @State private var selectedItem: PhotosPickerItem? = nil
-    @State private var selectedImage: UIImage? = nil
+    @State private var selectedItem: PhotosPickerItem? = nil          // the raw PhotosPicker result
+    @State private var pendingImage:  UIImage?        = nil          // image waiting for a type
+    @State private var showTypePicker = false                         // shows confirmationDialog
 
-    @State private var isDeleteMode = false
-    @State private var itemToDelete: ClothingItem?
-    @State private var showDeleteConfirmation = false
+    @State private var isDeleteMode        = false
+    @State private var itemToDelete:       ClothingItem?
+    @State private var showDeleteAlert     = false
 
-    var tops: [ClothingItem] {
-        viewModel.closet.filter { $0.itemType.isTop }
-    }
-
-    var bottoms: [ClothingItem] {
-        viewModel.closet.filter { $0.itemType.isBottom }
-    }
+    var tops:    [ClothingItem] { viewModel.closet.filter { $0.itemType.isTop    } }
+    var bottoms: [ClothingItem] { viewModel.closet.filter { $0.itemType.isBottom } }
 
     var body: some View {
         NavigationView {
             VStack {
                 if viewModel.isLoading {
-                    ProgressView("Loading Closet...")
-                        .padding()
+                    ProgressView("Loading Closet…").padding()
                 } else {
                     ScrollView {
                         VStack(alignment: .leading) {
                             GridView(title: "Tops",
                                      items: tops,
-                                     isDeleteMode: isDeleteMode,
-                                     onDeleteTapped: { item in
+                                     isDeleteMode: isDeleteMode) { item in
                                 itemToDelete = item
-                                showDeleteConfirmation = true
-                            })
+                                showDeleteAlert = true
+                            }
 
                             GridView(title: "Bottoms",
                                      items: bottoms,
-                                     isDeleteMode: isDeleteMode,
-                                     onDeleteTapped: { item in
+                                     isDeleteMode: isDeleteMode) { item in
                                 itemToDelete = item
-                                showDeleteConfirmation = true
-                            })
-                        }
-                        .padding(.top)
-                        .onLongPressGesture {
-                            withAnimation {
-                                isDeleteMode.toggle()
+                                showDeleteAlert = true
                             }
                         }
+                        .padding(.top)
+                        .onLongPressGesture { withAnimation { isDeleteMode.toggle() } }
                     }
                 }
             }
             .navigationTitle("Closet")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    if isDeleteMode {
-                        Button("Done") {
-                            withAnimation {
-                                isDeleteMode = false
-                            }
-                        }
-                    }
-                }
-
+                // ➋ PhotosPicker is the button itself – instant presentation
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showImagePicker = true
-                    }) {
+                    PhotosPicker(selection: $selectedItem,
+                                 matching: .images,
+                                 photoLibrary: .shared()) {
                         Image(systemName: "plus")
                     }
                 }
+
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if isDeleteMode {
+                        Button("Done") { withAnimation { isDeleteMode = false } }
+                    }
+                }
             }
-            .alert("Delete this item?", isPresented: $showDeleteConfirmation) {
+            // ➌ Handle the picked photo
+            .onChange(of: selectedItem) { newItem in
+                guard let newItem else { return }
+                Task {
+                    if let data  = try? await newItem.loadTransferable(type: Data.self),
+                       let uiImg = UIImage(data: data) {
+                        pendingImage = uiImg
+                        showTypePicker = true            // trigger type selection
+                    }
+                    selectedItem = nil                  // reset picker binding
+                }
+            }
+            // ➍ Ask the user which clothing-type to assign
+            .confirmationDialog("Choose item type",
+                                isPresented: $showTypePicker,
+                                titleVisibility: .visible) {
+                ForEach(ClothingItemType.allCases, id: \.self) { type in
+                    Button(type.stringValue) {
+                        if let img = pendingImage {
+                            viewModel.addImageFromCameraRoll(img, type: type)
+                        }
+                        pendingImage = nil
+                    }
+                }
+                Button("Cancel", role: .cancel) { pendingImage = nil }
+            }
+            // delete confirmation (unchanged)
+            .alert("Delete this item?",
+                   isPresented: $showDeleteAlert) {
                 Button("Delete", role: .destructive) {
                     if let item = itemToDelete {
-                        Task {
-                            await viewModel.deleteItem(item)
-                            itemToDelete = nil
-                        }
+                        Task { await viewModel.deleteItem(item) }
                     }
-                }
-                Button("Cancel", role: .cancel) {
                     itemToDelete = nil
                 }
+                Button("Cancel", role: .cancel) { itemToDelete = nil }
             }
-            .task {
-                await viewModel.loadCloset()
-            }
-            .sheet(isPresented: $showImagePicker) {
-                PhotosPicker("Add Clothing Item", selection: $selectedItem, matching: .images)
-                    .onChange(of: selectedItem) { newItem in
-                        guard let newItem = newItem else { return }
-                        Task {
-                            if let data = try? await newItem.loadTransferable(type: Data.self),
-                               let image = UIImage(data: data) {
-                                selectedImage = image
-                                viewModel.addImageFromCameraRoll(image)
-                            }
-                        }
-                    }
-            }
+            .task { await viewModel.loadCloset() }
         }
     }
 }
