@@ -111,3 +111,22 @@ https://github.com/user-attachments/assets/53329a48-ea70-4473-a20e-7e1fee0e61c2
 ### Delete Outfit
 
 https://github.com/user-attachments/assets/a732347d-8598-4851-85f1-13f1e769bfff  
+- User can delete outfit either by swiping left gesture or tapping trash can icon
+
+### Add Clothing Item to Closet
+
+https://github.com/user-attachments/assets/c9dfab4b-a51c-49af-a627-b01dc7639bff
+
+
+- Use PhotoPicker to add Clothing Item to Closet
+- Dialogue will follow where user chooses clothing item type (ie. shorts, long pants, skirt, etc.)
+
+  ### Delete Clothing Item from Closet
+
+https://github.com/user-attachments/assets/6a5400d1-2d96-4bdd-a35f-efa7251c4754
+
+- By long pressing on any clothing item in the closet, the app enters delete mode
+- Click on red minus icon on any clothing item to delete it
+- Any outfit with the clothing item will also be deleted
+- Item will be deleted from outfit picker carousel as well
+- Click "Done" on top left corner to exit delete mode
