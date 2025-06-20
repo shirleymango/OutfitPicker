@@ -8,66 +8,56 @@
 import SwiftUI
 
 struct PickOutfitView: View {
-    let tops: [ClothingItem]
+    let tops:    [ClothingItem]
     let bottoms: [ClothingItem]
     @ObservedObject var outfitsViewModel: OutfitsViewModel
 
-    @State private var selectedTopIndex = 0
-    @State private var selectedBottomIndex = 0
-    @State private var saveOutfitResult: SaveResult? = nil
+    @State private var selectedTopIndex     = 0
+    @State private var selectedBottomIndex  = 0
+    @State private var saveResult: SaveResult? = nil
 
-    var selectedTop: ClothingItem? {
-        tops.indices.contains(selectedTopIndex) ? tops[selectedTopIndex] : nil
-    }
-
-    var selectedBottom: ClothingItem? {
-        bottoms.indices.contains(selectedBottomIndex) ? bottoms[selectedBottomIndex] : nil
-    }
+    private var selectedTop   : ClothingItem? { tops[safe: selectedTopIndex]    }
+    private var selectedBottom: ClothingItem? { bottoms[safe: selectedBottomIndex] }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 10) {
-                VStack {
-                    CarouselView(items: tops, selectedIndex: $selectedTopIndex)
-                }
-
-                VStack {
-                    CarouselView(items: bottoms, selectedIndex: $selectedBottomIndex)
-                }
-
-                Button(action: {
-                    guard let top = selectedTop, let bottom = selectedBottom else { return }
-
-                    if let result = outfitsViewModel.addOutfit(top: top, bottom: bottom) {
-                        withAnimation {
-                            saveOutfitResult = result
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            saveOutfitResult = nil
+                CarouselView(items: tops,    selectedIndex: $selectedTopIndex)
+                CarouselView(items: bottoms, selectedIndex: $selectedBottomIndex)
+            }
+            .navigationTitle("Pick Outfit")
+            .toolbar {
+                ToolbarItem(placement: .bottomBar) {
+                    Button("Save Outfit") {
+                        guard let top = selectedTop, let bottom = selectedBottom else { return }
+                        if let result = outfitsViewModel.addOutfit(top: top, bottom: bottom) {
+                            withAnimation { saveResult = result }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { saveResult = nil }
                         }
                     }
-                }) {
-                    Text("Save Outfit to Closet")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(10)
+                    .buttonStyle(.borderedProminent)
                 }
-
-                if saveOutfitResult == .success {
-                    Text("✅ Outfit Saved!")
-                        .font(.headline)
-                }
-                if saveOutfitResult == .duplicate {
-                    Text("⚠️ Outfit Already Saved!")
-                        .font(.headline)
-                }
-
-                Spacer()
             }
-            .padding()
-            .navigationTitle("Outfit Picker")
+            .overlay(alignment: .top) {
+                if let result = saveResult {
+                    Text(result == .success ? "✅ Outfit Saved!" : "⚠️ Already Saved")
+                        .font(.callout.bold())
+                        .padding(.vertical, 6)
+                        .padding(.horizontal, 12)
+                        .background(.thinMaterial)
+                        .clipShape(Capsule())
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .padding(.top, 8)
+                }
+            }
         }
     }
 }
+
+// Convenience safe-subscript to avoid out-of-range crashes
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        indices.contains(index) ? self[index] : nil
+    }
+}
+
